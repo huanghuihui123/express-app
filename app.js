@@ -1,9 +1,10 @@
 const path = require("path");
 const express = require("express");
-const bodyParser = require('body-parser')
-const user = require('./routes/user')
+const bodyParser = require("body-parser");
+const jwt = require("jsonwebtoken");
+const user = require("./routes/user");
 const multerUpload = require("./routes/upload");
-const { status404, status500 } = require("./error/index");
+const { status401, status403, status404, status500 } = require("./error/index");
 
 const app = express();
 const port = 3000;
@@ -13,10 +14,41 @@ const port = 3000;
 app.use(express.static(path.join(__dirname, "public")));
 
 // 解析application/json
-app.use(bodyParser.json())
+app.use(bodyParser.json());
+
+app.all("/api/*", function (req, res, next) {
+  const url = req.url;
+  const arr = ["register", "login", "loginOut"];
+  let flag = arr.some((item) => url.includes(item));
+  if (flag) {
+    next();
+  } else {
+    let token = req.headers.authorization;
+    if (token) {
+      const secretOrPrivateKey = "myapp";
+      jwt.verify(token, secretOrPrivateKey, function (err, decoded) {
+        if (err) {
+          res.status(403).json({
+            code: 403,
+            status: false,
+            message: err.message,
+          });
+        } else {
+          next();
+        }
+      });
+    } else {
+      res.status(401).json({
+        code: 401,
+        status: false,
+        ...status401,
+      });
+    }
+  }
+});
 
 // 用户模块
-app.use("/api/user", user)
+app.use("/api/user", user);
 
 // 文件上传
 app.use("/api/upload", multerUpload);
@@ -26,7 +58,7 @@ app.use(function (req, res, next) {
   res.status(404).json({
     code: 404,
     status: false,
-    ...status404
+    ...status404,
   });
   next(status404);
 });
@@ -37,7 +69,7 @@ app.use(function (err, req, res, next) {
   res.status(500).json({
     code: 500,
     status: false,
-    ...status500
+    ...status500,
   });
 });
 

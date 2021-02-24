@@ -9,8 +9,8 @@ const upload = multer({
       cb(null, "./public/images");
     },
     filename: function (req, file, cb) {
-      const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-      cb(null, file.fieldname + "-" + uniqueSuffix);
+      const fileName = (new Date().getTime())+'-'+file.originalname;
+      cb(null, fileName);
     },
   }),
   limits: {
