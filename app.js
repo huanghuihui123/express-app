@@ -7,14 +7,16 @@ const multerUpload = require("./routes/upload");
 const { status401, status403, status404, status500 } = require("./error/index");
 
 const app = express();
-const port = 443;
+const port = 3000;
 
 // 托管静态文件,将public目录下的资源对外开发
-// http://localhost:443/images/1613982184754-4a731a90594a4af544c0c25941171.jpeg
+// http://localhost:3000/images/1613982184754-4a731a90594a4af544c0c25941171.jpeg
 app.use(express.static(path.join(__dirname, "public")));
 
 // 解析application/json
 app.use(bodyParser.json());
+
+
 
 app.all("/api/*", function (req, res, next) {
   const url = req.url;
