@@ -79,6 +79,8 @@ router.post("/login", function (req, res, next) {
       });
     }
   );
+
+  // const { account, password, appid, secret, code } = req.body;
   // const secretOrPrivateKey = "myapp";
   // const token = jwt.sign({ account, password }, secretOrPrivateKey, {
   //   expiresIn: 60 * 60,
