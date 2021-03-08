@@ -66,16 +66,26 @@ router.post("/login", function (req, res, next) {
   request(
     `https://api.weixin.qq.com/sns/jscode2session?appid=${appid}&secret=${secret}&js_code=${code}&grant_type=authorization_code`,
     function (error, response, body) {
-      console.error("error:", error); // Print the error if one occurred
-      console.log("statusCode:", response && response.statusCode); // Print the response status code if a response was received
-      console.log("body:", body); // Print the HTML for the Google homepage.
+      if (error && response.statusCode === 200) {
+        const { session_key, openid } = body;
+        const token = jwt.sign({ account, password }, session_key, {
+          expiresIn: 60 * 60,
+        });
+        res.json({
+          code: 200,
+          data: {
+            token,
+            openid,
+          },
+          status: true,
+          message: "登录成功！",
+        });
+        return;
+      }
       res.json({
-        code: 200,
-        data: {
-          token,
-        },
-        status: true,
-        message: "登录成功！",
+        code: 401,
+        status: false,
+        message: error,
       });
     }
   );
