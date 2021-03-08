@@ -63,11 +63,22 @@ router.post("/register", function (req, res, next) {
 // 登录
 router.post("/login", function (req, res, next) {
   const { appid, secret, code } = req.body;
-  request(`https://api.weixin.qq.com/sns/jscode2session?appid=${appid}&secret=${secret}&js_code=${code}&grant_type=authorization_code`, function (error, response, body) {
-    console.error("error:", error); // Print the error if one occurred
-    console.log("statusCode:", response && response.statusCode); // Print the response status code if a response was received
-    console.log("body:", body); // Print the HTML for the Google homepage.
-  });
+  request(
+    `https://api.weixin.qq.com/sns/jscode2session?appid=${appid}&secret=${secret}&js_code=${code}&grant_type=authorization_code`,
+    function (error, response, body) {
+      console.error("error:", error); // Print the error if one occurred
+      console.log("statusCode:", response && response.statusCode); // Print the response status code if a response was received
+      console.log("body:", body); // Print the HTML for the Google homepage.
+      res.json({
+        code: 200,
+        data: {
+          token,
+        },
+        status: true,
+        message: "登录成功！",
+      });
+    }
+  );
   // const secretOrPrivateKey = "myapp";
   // const token = jwt.sign({ account, password }, secretOrPrivateKey, {
   //   expiresIn: 60 * 60,
